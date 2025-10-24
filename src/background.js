@@ -26,19 +26,12 @@ async function captureScreenshot(msg) {
     const croppedBlob = await canvas.convertToBlob({ type: "image/png" });
     const croppedUrl = URL.createObjectURL(croppedBlob);
 
-    const now = new Date();
-    const YYYY = now.getFullYear();
-    const MM = String(now.getMonth() + 1).padStart(2, '0');
-    const DD = String(now.getDate()).padStart(2, '0');
-    const hh = String(now.getHours()).padStart(2, '0');
-    const mm = String(now.getMinutes()).padStart(2, '0');
-    const ss = String(now.getSeconds()).padStart(2, '0');
+    const { timestamp } = await browser.storage.local.get("timestamp");
+    let safeTimestamp = timestamp ? timestamp.replace(/\D/g, "").replace(/^0+/, "") : "0";
 
-    const date = `${YYYY}${MM}${DD}${hh}${mm}${ss}`;
+    // Prepend a folder if you want (must exist)
+    const filename = `screenshot-${safeTimestamp}.png`;
 
-    const filename = `yt/screenshot-${date}.png`;
-
-    // Download the file
     await browser.downloads.download({
       url: croppedUrl,
       filename: filename
@@ -47,7 +40,7 @@ async function captureScreenshot(msg) {
     // Save the filename to storage
     await browser.storage.local.set({ lastFilename: filename });
 
-    console.log("Cropped video frame saved.");
+    // console.log("Cropped video frame saved.");
   } catch (err) {
     console.error("Capture failed:", err);
   }

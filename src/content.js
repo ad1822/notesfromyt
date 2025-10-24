@@ -1,4 +1,4 @@
-function getVideoDetails() {
+async function getVideoDetails() {
   let title = null;
   let channel = null;
 
@@ -8,6 +8,7 @@ function getVideoDetails() {
     title = vd.title;
     channel = vd.author;
   }
+
 
   // Fallback: from DOM (works even if page changed dynamically)
   if (!title) {
@@ -20,14 +21,32 @@ function getVideoDetails() {
     channel = channelEl ? channelEl.innerText.trim() : null;
   }
 
+  await browser.storage.local.set({ channel: channel });
+  await browser.storage.local.set({ title: title });
+
   return { title, channel };
 }
+
+async function latestTimestamp() {
+  const timeElement = document.getElementsByClassName("ytp-time-current")[0];
+  if (!timeElement) return { time: null };
+  const time = timeElement.innerText;
+
+  await browser.storage.local.set({ timestamp: time });
+  return { time };
+}
+
 
 // --- Listen for popup requests ---
 browser.runtime.onMessage.addListener((msg) => {
   if (msg.action === "getVideoInfo") {
     const details = getVideoDetails();
     return Promise.resolve(details);
+  }
+
+  if (msg.action === "getTimestamp") {
+    const timestamp = latestTimestamp();
+    return Promise.resolve(timestamp);
   }
 });
 
