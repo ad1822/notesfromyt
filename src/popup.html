@@ -1,20 +1,38 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="UTF-8">
-    <title>Notes & Screenshot</title>
-    <style>
-body { font-family: sans-serif; background: #111; color: #eee; margin: 0; padding: 10px; width: 400px; }
-textarea { width: 100%; height: 200px; margin-bottom: 10px; background: #222; color: #eee; border: none; padding: 10px; resize: vertical; }
-button { padding: 8px 12px; background: #333; color: #fff; border: none; border-radius: 4px; cursor: pointer; margin-right: 5px; }
-button:hover { background: #555; }
-    </style>
-  </head>
-  <body>
-    <textarea id="note" placeholder="Write your notes here..."></textarea>
-    <br>
-    <button id="screenshot">Take Screenshot</button>
-    <button id="save">Save Note</button>
-    <script src="popup.js"></script>
-  </body>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>YouTube Notes Capture</title>
+  <style>
+    body {
+      background: #111;
+      color: #eee;
+      font-family: system-ui, sans-serif;
+      padding: 12px;
+      width: 260px;
+    }
+    button {
+      background: #222;
+      border: 1px solid #555;
+      padding: 8px 10px;
+      color: #eee;
+      cursor: pointer;
+      width: 100%;
+      border-radius: 6px;
+    }
+    button:hover {
+      background: #333;
+    }
+    #info {
+      margin-top: 10px;
+      font-size: 13px;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+  <button id="capture">Capture Screenshot + Info</button>
+  <div id="info"></div>
+  <script src="popup.js"></script>
+</body>
 </html>

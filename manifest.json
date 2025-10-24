@@ -6,12 +6,24 @@
   "permissions": [ "tabs", "activeTab", "scripting", "downloads","storage"],
   "host_permissions": ["*://*.youtube.com/*"],
   "background": {
-    "scripts": ["src/background.js"],
-    "persistent": false
+    "scripts": ["src/background.js"]
   },
   "content_scripts": [
     {
       "matches": ["https://www.youtube.com/*"]
+    }
+  ],
+ "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "48": "icon.png"
+    }
+  },
+  "content_scripts": [
+    {
+      "matches": ["*://*.youtube.com/*"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
     }
   ],
   "browser_action": {

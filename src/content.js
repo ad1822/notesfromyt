@@ -1,27 +1,39 @@
-// Function to get video title
-function getVideoTitle() {
-  const el = document.querySelector('#title h1 yt-formatted-string');
-  return el ? el.getAttribute('title') || el.innerText.trim() : null;
+function getVideoDetails() {
+  let title = null;
+  let channel = null;
+
+  // Fastest: from YouTube's internal JS object
+  if (window.ytInitialPlayerResponse?.videoDetails) {
+    const vd = window.ytInitialPlayerResponse.videoDetails;
+    title = vd.title;
+    channel = vd.author;
+  }
+
+  // Fallback: from DOM (works even if page changed dynamically)
+  if (!title) {
+    const titleEl = document.querySelector("#title h1 yt-formatted-string");
+    title = titleEl ? titleEl.innerText.trim() : null;
+  }
+
+  if (!channel) {
+    const channelEl = document.querySelector("#owner yt-formatted-string a");
+    channel = channelEl ? channelEl.innerText.trim() : null;
+  }
+
+  return { title, channel };
 }
 
-// Try immediately
-// const title = getVideoTitle();
-// if (title) {
-//   browser.runtime.sendMessage({ action: "videoTitle", title });
-// } else {
-//   // Observe #title for dynamic loading
-//   const observer = new MutationObserver(() => {
-//     const title = getVideoTitle();
-//     if (title) {
-//       browser.runtime.sendMessage({ action: "videoTitle", title });
-//       observer.disconnect();
-//     }
-//   });
-//
-//   const titleDiv = document.getElementById('title');
-//   if (titleDiv) observer.observe(titleDiv, { childList: true, subtree: true });
-// }
+// --- Listen for popup requests ---
+browser.runtime.onMessage.addListener((msg) => {
+  if (msg.action === "getVideoInfo") {
+    const details = getVideoDetails();
+    return Promise.resolve(details);
+  }
+});
 
+
+
+// Function to get video title
 (async () => {
   const video = document.querySelector(".html5-main-video");
   if (!video) {
