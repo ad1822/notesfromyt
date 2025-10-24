@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>YouTube Markdown Notes</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 10px;
+      font-family: system-ui, sans-serif;
+      background-color: #111;
+      color: #eee;
+      width: 250px;
+    }
+
+    h1 {
+      font-size: 16px;
+      margin: 0 0 10px 0;
+      text-align: center;
+    }
+
+    button {
+      display: block;
+      width: 100%;
+      margin: 6px 0;
+      padding: 8px;
+      border: none;
+      border-radius: 6px;
+      background: #2563eb;
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    button:hover {
+      background: #1d4ed8;
+    }
+
+    .info {
+      font-size: 12px;
+      text-align: center;
+      margin-top: 8px;
+      color: #aaa;
+    }
+  </style>
+</head>
+
+<body>
+  <button id="screenshot">Take screenshot</button>
+
+  <script src="popup.js"></script>
+  <script src="screenshot.js"></script>
+</body>
+</html>
