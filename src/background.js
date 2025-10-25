@@ -1,3 +1,5 @@
+let latestFilename = null;
+
 async function captureScreenshot(msg) {
   try {
     const { rect } = msg;
@@ -26,21 +28,33 @@ async function captureScreenshot(msg) {
     const croppedBlob = await canvas.convertToBlob({ type: "image/png" });
     const croppedUrl = URL.createObjectURL(croppedBlob);
 
-    const { timestamp } = await browser.storage.local.get("timestamp");
-    let safeTimestamp = timestamp ? timestamp.replace(/\D/g, "").replace(/^0+/, "") : "0";
+    const now = new Date();
+    const YYYY = now.getFullYear();
+    const MM = String(now.getMonth() + 1).padStart(2, '0');
+    const DD = String(now.getDate()).padStart(2, '0');
+    const hh = String(now.getHours()).padStart(2, '0');
+    const mm = String(now.getMinutes()).padStart(2, '0');
+    const ss = String(now.getSeconds()).padStart(2, '0');
 
-    // Prepend a folder if you want (must exist)
-    const filename = `screenshot-${safeTimestamp}.png`;
 
+    const date = `${YYYY}-${MM}-${DD}-${hh}-${mm}-${ss}`;
+
+    const folder = "yt"
+    const filename = `screenshot/screenshot-${date}.png`;
+    latestFilename = filename;
+
+    // await browser.storage.local.set({ lastFilename: filename });
+
+
+    // Download the file
     await browser.downloads.download({
       url: croppedUrl,
-      filename: filename
+      filename: `${folder}/${filename}`
     });
 
-    // Save the filename to storage
-    await browser.storage.local.set({ lastFilename: filename });
+    browser.runtime.sendMessage({ action: "newFilename", filename });
+    console.log("Cropped frame saved as", filename);
 
-    // console.log("Cropped video frame saved.");
   } catch (err) {
     console.error("Capture failed:", err);
   }
@@ -52,5 +66,8 @@ browser.runtime.onMessage.addListener(async (msg, sender) => {
   }
   if (msg.action === "captureVideoFrame") {
     captureScreenshot(msg)
+  }
+  if (msg.action === "getFilename") {
+    return Promise.resolve({ filename: latestFilename });
   }
 });

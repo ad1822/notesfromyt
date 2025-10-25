@@ -52,7 +52,7 @@ document.getElementById("capture").addEventListener("click", async () => {
 
     const { time } = await browser.tabs.sendMessage(tab.id, { action: "getTimestamp" });
 
-    const { lastFilename } = await browser.storage.local.get("lastFilename");
+    // const { lastFilename } = await browser.storage.local.get("lastFilename");
     // console.log("Filename from storage:", lastFilename);
 
     infoDiv.innerHTML = `
@@ -60,11 +60,27 @@ document.getElementById("capture").addEventListener("click", async () => {
       Title: ${title || "Unknown"}<br>
       Channel: ${channel || "Unknown"}<br>
       Timestamp: ${time}<br>
-      Filename : ${lastFilename}<br>
     `;
-    textarea.value += `\n![](${lastFilename})`
+    // Filename : ${lastFilename}<br>
+    // textarea.value += `\n![](${lastFilename})`
 
   } catch (err) {
     console.error(err);
   }
 });
+
+browser.runtime.onMessage.addListener((msg) => {
+  if (msg.action === "newFilename") {
+    const textarea = document.getElementById("textarea");
+    textarea.value += `\n![](${msg.filename})`;
+  }
+});
+
+// Get latest filename when popup opens
+(async () => {
+  const { filename } = await browser.runtime.sendMessage({ action: "getFilename" });
+  if (filename) {
+    const textarea = document.getElementById("textarea");
+    textarea.value += `\n![](${filename})`;
+  }
+})();
