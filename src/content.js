@@ -44,6 +44,9 @@ browser.runtime.onMessage.addListener((msg) => {
     return Promise.resolve(latestTimestamp());
   }
 
+  // NOTE:  PING IT
+  if (msg.action === "ping") sendResponse({ ready: true });
+
   if (msg.action === "getVideoRect") {
     const video = document.querySelector(".html5-main-video");
     if (!video) return Promise.reject("No video element");

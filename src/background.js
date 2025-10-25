@@ -53,6 +53,7 @@ async function captureScreenshot(msg) {
     });
 
     // Send the filename back to the overlay to update the textarea
+    console.log("Did that")
     browser.tabs.sendMessage(tabId, { action: "newFilename", filename });
   } catch (err) {
     console.error("Capture failed:", err);
@@ -65,20 +66,19 @@ browser.runtime.onMessage.addListener(async (msg, sender) => {
     const [tab] = await browser.tabs.query({ active: true, currentWindow: true });
     await browser.tabs.executeScript(tab.id, { file: "src/content.js" });
 
+    const { title, channel } = await browser.tabs.sendMessage(tab.id, { action: "getVideoInfo" });
+    const { time } = await browser.tabs.sendMessage(tab.id, { action: "getTimestamp" });
 
     const rect = await browser.tabs.sendMessage(tab.id, { action: "getVideoRect" });
-    captureScreenshot({ rect });
+    await captureScreenshot({ rect });
 
-    // const { title, channel } = await browser.tabs.sendMessage(tab.id, { action: "getVideoInfo" });
-    // const { time } = await browser.tabs.sendMessage(tab.id, { action: "getTimestamp" });
-    // browser.tabs.sendMessage(tab.id, {
-    //   action: "displayInfo",
-    //   info: { title, channel, time }
-    // });
+    browser.tabs.sendMessage(tab.id, {
+      action: "displayInfo",
+      info: { title, channel, time }
+    });
   }
 
   // BUG: This is not working
-
   // if (msg.action === "saveNotes") {
   //   (async () => {
   //     const result = await browser.storage.local.get("title");

@@ -97,38 +97,18 @@ if (document.getElementById("yt-overlay")) {
   });
 
   // BUG: SAVE button: Sends textarea content to background.js for saving
-  document.getElementById("save").addEventListener("click", () => {
-    const saveButton = document.getElementById("save");
-    const textarea = document.getElementById("textarea");
-
-    const content = textarea.value;
-
-    saveButton.textContent = "Saving...";
-    saveButton.disabled = true;
-
-    browser.runtime.sendMessage({ action: "saveNotes", content: content })
-      .catch(error => {
-        console.error("[Overlay] Save failed: Check background script logs.", error);
-        saveButton.textContent = "Error! ❌";
-        saveButton.disabled = false;
-        setTimeout(() => saveButton.textContent = "Save Notes (to Markdown)", 3000);
-      });
-
-    // We rely on the 'notesSavedConfirmation' listener (which is still in overlay.js)
-    // to update the button after the background script finishes the download.
-  });
 
   browser.runtime.onMessage.addListener((msg) => {
-    // if (msg.action === "displayInfo") {
-    //   const { title, channel, time } = msg.info;
-    //   const infoDiv = document.getElementById("info");
-    //   infoDiv.innerHTML = `
-    //     <b>Captured:</b><br>
-    //     Title: ${title}<br>
-    //     Channel: ${channel}<br>
-    //     Timestamp: ${time}
-    //   `;
-    // }
+    if (msg.action === "displayInfo") {
+      const { title, channel, time } = msg.info;
+      const infoDiv = document.getElementById("info");
+      infoDiv.innerHTML = `
+        <b>Captured:</b><br>
+        Title: ${title}<br>
+        Channel: ${channel}<br>
+        Timestamp: ${time}
+      `;
+    }
 
     if (msg.action === "newFilename") {
       const textarea = document.getElementById("textarea");
