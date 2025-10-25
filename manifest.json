@@ -3,31 +3,29 @@
   "name": "YouTube Markdown Notes",
   "version": "0.1",
   "description": "Take timestamped Markdown notes with screenshots while watching YouTube.",
-  "permissions": ["tabs", "scripting", "downloads", "storage", "activeTab", "windows"],
+  "permissions": [
+    "activeTab",
+    "tabs",
+    "scripting",
+    "downloads",
+    "storage",
+    "windows"
+  ],
   "host_permissions": ["*://*.youtube.com/*"],
   "background": {
-    "scripts": ["src/background.js"]
-  },
-  "content_scripts": [
-    {
-      "matches": ["https://www.youtube.com/*"]
-    }
-  ],
- "action": {
-    "default_popup": "popup.html",
-    "default_icon": {
-      "48": "icon.png"
-    }
+    "scripts": ["src/background.js"],
+    "persistent": true
   },
   "content_scripts": [
     {
       "matches": ["*://*.youtube.com/*"],
-      "js": ["content.js"],
       "run_at": "document_idle"
     }
   ],
+ "web_accessible_resources": [
+    "src/overlay.js"
+  ],
   "browser_action": {
-    "default_popup": "src/popup.html",
     "default_icon": {
       "16": "icons/icon.png",
       "48": "icons/icon.png"
