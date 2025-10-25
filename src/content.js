@@ -1,3 +1,4 @@
+// NOTE: Get Video metadata logic
 async function getVideoDetails() {
   let title = null;
   let channel = null;
@@ -19,12 +20,12 @@ async function getVideoDetails() {
     channel = channelEl ? channelEl.innerText.trim() : null;
   }
 
-  // Save for use in the filename creation
   await browser.storage.local.set({ channel: channel, title: title });
 
   return { title, channel };
 }
 
+// NOTE: Get current timestamp
 async function latestTimestamp() {
   const timeElement = document.getElementsByClassName("ytp-time-current")[0];
   const time = timeElement ? timeElement.innerText : null;

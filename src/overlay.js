@@ -1,14 +1,14 @@
-// Prevent multiple overlays
 if (document.getElementById("yt-overlay")) {
   console.warn("Overlay already exists. Toggling visibility.");
   const existingOverlay = document.getElementById("yt-overlay");
-  // Optional: Toggle visibility instead of preventing creation
+
   existingOverlay.style.display = (existingOverlay.style.display === "none" ? "block" : "none");
+
 } else {
+
   const overlay = document.createElement("div");
   overlay.id = "yt-overlay";
 
-  // Minimal CSS for styling (using a style attribute for simplicity)
   overlay.style.cssText = `
     position: fixed;
     top: 80px;
@@ -27,7 +27,6 @@ if (document.getElementById("yt-overlay")) {
     gap: 10px;
 `;
 
-  // HTML structure
   overlay.innerHTML = `
     <style>
         /* Styles scoped to the overlay */
@@ -89,8 +88,6 @@ if (document.getElementById("yt-overlay")) {
 
   // METADATA
   document.getElementById("metadata").addEventListener("click", () => {
-    console.log("[Overlay] Metadata button clicked. Requesting data...");
-    // Send a simple request to the background script
     browser.runtime.sendMessage({ action: "getMetadataRequest" });
   });
 
@@ -99,46 +96,39 @@ if (document.getElementById("yt-overlay")) {
     browser.runtime.sendMessage({ action: "captureRequest" });
   });
 
-  // SAVE button: Sends textarea content to background.js for saving
-  document.getElementById("save").addEventListener("click", () => { // Removed 'async' from the function
-    console.log("[Overlay] Save button clicked! (Sending message to background...)"); // STEP 1: Check if the button is firing
-
+  // BUG: SAVE button: Sends textarea content to background.js for saving
+  document.getElementById("save").addEventListener("click", () => {
     const saveButton = document.getElementById("save");
+    const textarea = document.getElementById("textarea");
+
+    const content = textarea.value;
+
     saveButton.textContent = "Saving...";
     saveButton.disabled = true;
 
-    const content = document.getElementById("textarea").value;
-
-    // CRITICAL FIX 1: Do NOT use 'await' here. Fire and forget the message.
-    browser.runtime.sendMessage({ action: "saveNotes", content })
-      .then(() => {
-        // This 'then' might still fire before the file is saved, 
-        // so we rely on the notesSavedConfirmation message from the background.
-      })
+    browser.runtime.sendMessage({ action: "saveNotes", content: content })
       .catch(error => {
-        // CRITICAL FIX 2: This will now catch the timeout/disconnect error and display it.
-        console.error("[Overlay] Failed to send/receive saveNotes response:", error);
-        saveButton.textContent = "Error! ❌ (Check Console)";
+        console.error("[Overlay] Save failed: Check background script logs.", error);
+        saveButton.textContent = "Error! ❌";
         saveButton.disabled = false;
-        setTimeout(() => saveButton.textContent = "Save", 3000);
+        setTimeout(() => saveButton.textContent = "Save Notes (to Markdown)", 3000);
       });
 
-    // We rely entirely on the background script to send the 'notesSavedConfirmation' 
-    // message when the download is truly finished.
+    // We rely on the 'notesSavedConfirmation' listener (which is still in overlay.js)
+    // to update the button after the background script finishes the download.
   });
-  // --- Message Listeners from Background Script ---
+
   browser.runtime.onMessage.addListener((msg) => {
-    // Update the info div after a successful capture
-    if (msg.action === "displayInfo") {
-      const { title, channel, time } = msg.info;
-      const infoDiv = document.getElementById("info");
-      infoDiv.innerHTML = `
-        <b>Captured:</b><br>
-        Title: ${title}<br>
-        Channel: ${channel}<br>
-        Timestamp: ${time}
-      `;
-    }
+    // if (msg.action === "displayInfo") {
+    //   const { title, channel, time } = msg.info;
+    //   const infoDiv = document.getElementById("info");
+    //   infoDiv.innerHTML = `
+    //     <b>Captured:</b><br>
+    //     Title: ${title}<br>
+    //     Channel: ${channel}<br>
+    //     Timestamp: ${time}
+    //   `;
+    // }
 
     if (msg.action === "newFilename") {
       const textarea = document.getElementById("textarea");
