@@ -1,10 +1,6 @@
-browser.browserAction.onClicked.addListener(async (tab) => {
-  await browser.tabs.sendMessage(tab.id, { action: "toggleOverlay" });
-});
-
 let latestFilename = null;
 
-async function captureScreenshot(rect) {
+async function captureScreenshot({ rect }) {
   try {
     const [tab] = await browser.tabs.query({ active: true, currentWindow: true });
     const dataUrl = await browser.tabs.captureVisibleTab(tab.windowId, { format: "png" });
@@ -29,46 +25,46 @@ async function captureScreenshot(rect) {
     const croppedUrl = URL.createObjectURL(croppedBlob);
 
     const now = new Date();
-    const stamp = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}-${String(now.getHours()).padStart(2, "0")}-${String(now.getMinutes()).padStart(2, "0")}-${String(now.getSeconds()).padStart(2, "0")}`;
+    const date = now.toISOString().replace(/[:.]/g, '-');
+    const folder = "notesfromyt";
 
-    const filename = `screenshot/screenshot-${stamp}.png`;
+
+    await browser.scripting.executeScript({
+      target: { tabId: tab.id },
+      files: ["content.js"]
+    });
+
+    const { title } = await browser.storage.local.get("title");
+    const safeTitle = (title || "unknown_video").replace(/[\/\\:*?"<>|]/g, "").trim();
+    console.log(safeTitle)
+
+
+
+    const filename = `screenshot/screenshot-${date}.png`;
     latestFilename = filename;
 
     await browser.downloads.download({
       url: croppedUrl,
-      filename,
+      filename: `${folder}/${safeTitle}/${filename}`,
       saveAs: false
     });
 
-    return filename;
+    browser.runtime.sendMessage({ action: "newFilename", filename });
+    console.log("Cropped frame saved as", filename);
   } catch (err) {
     console.error("Capture failed:", err);
-    return null;
   }
 }
 
-browser.runtime.onMessage.addListener(async (msg, sender) => {
-  if (msg.action === "captureRequest") {
-    const [tab] = await browser.tabs.query({ active: true, currentWindow: true });
-    const rect = await browser.tabs.sendMessage(tab.id, { action: "getVideoRect" });
-    const filename = await captureScreenshot(rect);
-
-    if (filename) {
-      browser.tabs.sendMessage(tab.id, { action: "newFilename", filename });
-    }
-
-    const info = await browser.tabs.sendMessage(tab.id, { action: "getVideoInfo" });
-    const time = await browser.tabs.sendMessage(tab.id, { action: "getTimestamp" });
-
-    browser.tabs.sendMessage(tab.id, {
-      action: "displayInfo",
-      info: { ...info, ...time }
-    });
-  }
-
-  if (msg.action === "getMetadataRequest") {
-    const [tab] = await browser.tabs.query({ active: true, currentWindow: true });
-    const info = await browser.tabs.sendMessage(tab.id, { action: "getVideoInfo" });
-    browser.tabs.sendMessage(tab.id, { action: "metadataResponse", info });
+browser.runtime.onMessage.addListener((msg) => {
+  switch (msg.action) {
+    case "captureVideoFrame":
+      captureScreenshot(msg);
+      break;
+    case "getFilename":
+      return Promise.resolve({ filename: latestFilename });
+    case "videoTitle":
+      console.log("Video title received in background:", msg.title);
+      break;
   }
 });

@@ -1,40 +1,113 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>YouTube Notes Capture</title>
-  <style>
-    body {
-      background: #111;
-      color: #eee;
-      font-family: system-ui, sans-serif;
-      padding: 12px;
-      width: 260px;
-    }
-    button {
-      background: #222;
-      border: 1px solid #555;
-      padding: 8px 10px;
-      color: #eee;
-      cursor: pointer;
-      width: 100%;
-      border-radius: 6px;
-    }
-    button:hover {
-      background: #333;
-    }
-    #info {
-      margin-top: 10px;
-      font-size: 13px;
-      word-break: break-word;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <title>YouTube Notes Capture</title>
+    <style>
+        /* Global & Layout Reset */
+        body {
+            /* Increased size for better button spacing and readability */
+            width: 320px; 
+            padding: 15px;
+            
+            /* Dark YouTube Aesthetic */
+            background: #0f0f0f; 
+            color: #ffffff;
+            font-family: 'Roboto', sans-serif; /* Standard YouTube font */
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 12px; /* Space between all elements */
+        }
+
+        /* Input/Textarea Styling */
+        #textarea {
+            width: 100%;
+            min-height: 400px;
+            padding: 10px;
+            border: 1px solid #303030;
+            border-radius: 8px;
+            background: #1c1c1c;
+            color: #ffffff;
+            resize: vertical; /* Allow vertical resizing */
+            box-sizing: border-box; /* Include padding/border in width */
+            font-size: 14px;
+        }
+        
+        /* Button Container for Layout */
+        .button-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        /* General Button Styling */
+        button {
+            padding: 10px 15px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        /* Capture Button (Primary Action) */
+        #capture {
+            background-color: #ff0000; /* YouTube Red */
+            color: white;
+            flex-grow: 1; /* Takes up available space */
+        }
+        
+        #capture:hover {
+            background-color: #cc0000; /* Darker red on hover */
+        }
+
+        /* Metadata Button (Secondary Action) */
+        #metadata {
+            background-color: #303030;
+            color: #aaa;
+            width: 35%; /* Fixed width for a smaller button */
+        }
+        
+        #metadata:hover {
+            background-color: #404040;
+            color: #fff;
+        }
+
+        /* Save Button (Tertiary Action - Bold but less dominant than Capture) */
+        #save {
+            background-color: #3ea6ff; /* A clean blue for saving */
+            color: #0f0f0f;
+            font-weight: bold;
+        }
+
+        #save:hover {
+            background-color: #2b77c2;
+        }
+
+        /* Utility/Info Styles */
+        #info {
+            font-size: 12px;
+            color: #aaaaaa;
+            word-break: break-word;
+        }
+    </style>
 </head>
 <body>
-  <button id="capture">Capture Screenshot + Info</button>
-  <div id="info"></div>
-  <textarea rows="4" cols="30" id="textarea"></textarea>
-  <button id="save">Save</button>
-  <!-- <script src="popup.js"></script> -->
+    
+    <div class="button-group">
+        <button id="capture">📸 Capture Frame</button>
+        <button id="metadata">Info</button>
+        <button id="timestamp">Timestamp</button>
+    </div>
+
+    <textarea rows="4" cols="30" id="textarea" placeholder="Start typing your notes here..."></textarea>
+    
+    <button id="save">💾 Save Notes (.md)</button>
+    
+    <div id="info"></div> 
+    
+    <script src="popup.js"></script>
 </body>
 </html>

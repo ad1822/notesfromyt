@@ -1,70 +1,50 @@
-// Inject overlay if user clicks icon
-browser.runtime.onMessage.addListener((msg) => {
-  if (msg.action === "toggleOverlay") injectOverlay();
-  if (msg.action === "getVideoInfo") return Promise.resolve(getVideoDetails());
-  if (msg.action === "getTimestamp") return Promise.resolve(latestTimestamp());
-  if (msg.action === "getVideoRect") return Promise.resolve(getVideoRect());
-});
-
-function injectOverlay() {
-  if (document.getElementById("yt-overlay")) return;
-
-  const s = document.createElement("script");
-  s.src = browser.runtime.getURL("src/overlay.js");
-  document.body.appendChild(s);
-
-  // Bridge between overlay (page) and extension (content)
-  window.addEventListener("message", (event) => {
-    if (event.source !== window || !event.data) return;
-    const { action, payload } = event.data;
-    if (!action) return;
-
-    browser.runtime.sendMessage({ action, ...payload });
-  });
-
-  browser.runtime.onMessage.addListener((msg) => {
-    window.postMessage({ fromExtension: true, msg }, "*");
-  });
-}
-
 async function getVideoDetails() {
-  let title = null;
-  let channel = null;
+  let title = window.ytInitialPlayerResponse?.videoDetails?.title ||
+    document.querySelector("#title h1 yt-formatted-string")?.innerText.trim() || "Unknown";
+  let channel = window.ytInitialPlayerResponse?.videoDetails?.author ||
+    document.querySelector("#owner yt-formatted-string a")?.innerText.trim() || "Unknown";
 
-  if (window.ytInitialPlayerResponse?.videoDetails) {
-    title = window.ytInitialPlayerResponse.videoDetails.title;
-    channel = window.ytInitialPlayerResponse.videoDetails.author;
-  }
 
-  if (!title) {
-    const el = document.querySelector("#title h1 yt-formatted-string");
-    title = el ? el.innerText.trim() : "Unknown Title";
-  }
-  if (!channel) {
-    const el = document.querySelector("#owner yt-formatted-string a");
-    channel = el ? el.innerText.trim() : "Unknown Channel";
-  }
+  const duration = document.querySelector(".ytp-time-duration")?.innerText || null;
+  console.log(duration)
 
-  await browser.storage.local.set({ title, channel });
-  return { title, channel };
+  const url = window.location.href
+
+  await browser.storage.local.set({ title, channel, url, duration });
+  return { title, channel, url, duration };
 }
 
 async function latestTimestamp() {
-  const el = document.querySelector(".ytp-time-current");
-  const time = el ? el.innerText : "0:00";
+  const time = document.querySelector(".ytp-time-current")?.innerText || null;
   await browser.storage.local.set({ timestamp: time });
-  return { time };
+  const [minStr, secStr] = time.split(":");
+  const min = parseInt(minStr, 10) * 60
+  const actualTime = min + parseInt(secStr, 10)
+  return { time, actualTime };
 }
 
-function getVideoRect() {
+// Auto-capture frame on video load
+async function captureCurrentVideoFrame() {
   const video = document.querySelector(".html5-main-video");
-  if (!video) throw new Error("No video element found");
-  const r = video.getBoundingClientRect();
-  return {
-    x: r.x,
-    y: r.y,
-    width: r.width,
-    height: r.height,
-    devicePixelRatio: window.devicePixelRatio
-  };
+  if (!video) return;
+
+  const rect = video.getBoundingClientRect();
+  await browser.runtime.sendMessage({
+    action: "captureVideoFrame",
+    rect: {
+      x: rect.x,
+      y: rect.y,
+      width: rect.width,
+      height: rect.height,
+      devicePixelRatio: window.devicePixelRatio
+    }
+  });
 }
+
+// Expose function so popup can call it
+window.captureCurrentVideoFrame = captureCurrentVideoFrame;
+
+browser.runtime.onMessage.addListener((msg) => {
+  if (msg.action === "getVideoInfo") return getVideoDetails();
+  if (msg.action === "getTimestamp") return latestTimestamp();
+});

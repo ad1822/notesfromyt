@@ -1,33 +1,30 @@
 {
   "manifest_version": 2,
   "name": "YouTube Markdown Notes",
-  "version": "0.2",
+  "version": "0.1",
   "description": "Take timestamped Markdown notes with screenshots while watching YouTube.",
-  "permissions": [
-    "activeTab",
-    "tabs",
-    "downloads",
-    "storage",
-    "windows"
-  ],
+  "permissions": ["tabs", "scripting", "downloads", "storage", "activeTab", "windows"],
   "background": {
-    "scripts": ["src/background.js"],
-    "persistent": true
+    "scripts": ["src/background.js"]
   },
   "content_scripts": [
     {
+      "matches": ["https://www.youtube.com/*"]
+    }
+  ],
+  "content_scripts": [
+    {
       "matches": ["*://*.youtube.com/*"],
-      "js": ["src/content.js"],
+      "js": ["content.js"],
       "run_at": "document_idle"
     }
   ],
-  "web_accessible_resources": [
-    "src/overlay.js"
-  ],
   "browser_action": {
+    "default_popup": "src/popup.html",
     "default_icon": {
       "16": "icons/icon.png",
       "48": "icons/icon.png"
     }
   }
 }
+
