@@ -1,47 +1,54 @@
-# YouTube Markdown Notes
+# YouTube Notes Capture
 
-A lightweight Firefox-based browser extension for creators, developers, and learners who take structured notes directly from YouTube videos — in Markdown.
-It captures screenshots, timestamps, and metadata, and saves notes persistently with Obsidian-compatible formatting.
+A lightweight Firefox/Zen browser extension for creating structured, markdown-based notes directly from YouTube videos.
+Built for developers, learners, and researchers who prefer keeping their knowledge in Markdown or Obsidian.
 
 ---
 
-## 🚀 Features
+## Features
 
-* **Screenshot Capture**
-  Instantly capture a frame from the current YouTube video.
-  Each screenshot is automatically stored inside a folder named after the video title.
+**Capture Screenshots**
+  - Capture the current frame of a YouTube video instantly.
+  - Each video gets its own folder named after the video title.
+  - Screenshots are stored inside that folder.
 
-* **Timestamp Insertion**
-  Insert the current YouTube playback timestamp (supports hours, minutes, seconds) directly into your notes for quick referencing.
+ **Insert Timestamps**
+  - Insert the current video time (e.g., `12:34` or `1:02:15`) into your notes with a single click.
+  - Works for videos with hours or minutes.
+  - Ideal for timestamp-based note-taking.
 
-* **Persistent Notes**
-  Notes remain saved even after popup closure.
-  Your draft stays safe until you explicitly save or clear it.
+- **Persistent Notes Storage**
+  - Notes written in the popup persist between sessions.
+  - Data is saved locally using `browser.storage.local`.
+  - Notes remain intact even if the popup is closed or the browser is restarted.
 
-* **Markdown Export**
-  Save notes as `.md` files — structured, readable, and ready for integration with Markdown-based note systems.
+- **Save Notes as Markdown**
+  - Export your notes as a `.md` file using the video title as the filename.
+  - Includes video title, URL, and optional metadata.
+  - Structured for easy import into Markdown editors like Obsidian.
 
-* **Obsidian Template Support**
-  Saved Markdown files include a metadata section formatted for Obsidian, including:
+- **Obsidian Template Integration**
+  - Markdown files follow a structured format:
+    - Video Title
+    - Channel Name
+    - Video URL
+    - Description
+    - Your Notes
+    - Screenshot and timestamp references
 
-  * Video title
-  * Channel name
-  * URL
-  * Published date
+- **Folder Structure**
 
-  Example:
-
-  ```markdown
-  ---
-  video: "How to Learn Kubernetes"
-  channel: "TechWorld with Nana"
-  url: "https://www.youtube.com/watch?v=xxxxxx"
-  date: "2025-10-27"
-  ---
-
-  ## Notes
-  - Timestamp: 02:15 → Great explanation on Pods.
-  - Screenshot captured for Deployment example.
+  ```
+  YouTube Notes/
+  ├── <Video Title>/
+  │   ├── <Video Title>.md
+  │   ├── screenshot_2025-10-27_01-24-05.png
+  │   ├── screenshot_2025-10-27_01-26-11.png
+  │   └── ...
+  ├── Another Video Title/
+  │   ├── Another Video Title.md
+  │   ├── screenshot_2025-10-26_21-55-33.png
+  │   └── ...
   ```
 
 ---
@@ -50,47 +57,21 @@ It captures screenshots, timestamps, and metadata, and saves notes persistently 
 
 1. Open any YouTube video.
 2. Launch the extension popup.
-3. Start taking notes — insert timestamps, capture screenshots, or write text.
-4. Click **Save Notes** to export your Markdown file.
-
-All screenshots and notes are automatically organized per video.
-
----
-
-## Tech Stack
-
-* **WebExtension (Manifest V3)**
-* **JavaScript / HTML / CSS**
-* **Firefox-compatible APIs (storage, tabs, downloads)**
-* **LocalStorage persistence**
-* **Dynamic folder organization for each video**
+3. Write your notes or click available actions:
+   - Capture frame
+   - Insert timestamp
+   - Fetch video info (title, channel, description)
+   - Clear notes
+4. Click **Save Notes** to export everything as a Markdown file inside a folder named after the video title.
 
 ---
 
-## 🧱 Folder Structure
+## Future Improvements
 
-```
-YouTube Markdown Notes/
-├── manifest.json
-├── popup.html
-├── popup.js
-├── overlay.js
-└── icons/
-```
+- Automatic sync with an Obsidian vault
+- Global keyboard shortcut for timestamp capture
+- AI-based section summaries
+- Cross-video tagging and search
 
 ---
 
-## Future Enhancements
-
-* Direct sync with an Obsidian vault (auto-detect vault paths)
-* Auto-fetch video transcript for deeper note linking
-* Keyboard shortcuts for capture and timestamp
-* Export session as `.zip` (screenshots + markdown)
-
----
-
-<!-- ## 📄 License -->
-<!---->
-<!-- MIT License — free to use, modify, and extend. -->
-<!---->
-<!-- --- -->

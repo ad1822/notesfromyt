@@ -23,9 +23,10 @@ async function saveTextareaToFile(textarea) {
   URL.revokeObjectURL(url);
 }
 
-document.getElementById("clean").addEventListener("click", () => {
+document.getElementById("clean").addEventListener("click", async () => {
   const textarea = document.getElementById("textarea");
   textarea.value = ""
+  await browser.storage.local.set({ notes: textarea.value });
 })
 
 document.getElementById("save").addEventListener("click", () => {

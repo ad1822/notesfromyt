@@ -1,8 +1,8 @@
 {
   "manifest_version": 2,
-  "name": "YouTube Markdown Notes",
+  "name": "Markdown notes from Youtube",
   "version": "0.1",
-  "description": "Take timestamped Markdown notes with screenshots while watching YouTube.",
+  "description": "Take notes, screenshots, timestamp from youtube video and save it as a Markdown file, Competible with Obsidian template.",
   "permissions": ["tabs", "scripting", "downloads", "storage", "activeTab"],
   "background": {
     "scripts": ["src/background.js"]
