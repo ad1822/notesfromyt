@@ -3,7 +3,7 @@
   "name": "YouTube Markdown Notes",
   "version": "0.1",
   "description": "Take timestamped Markdown notes with screenshots while watching YouTube.",
-  "permissions": ["tabs", "scripting", "downloads", "storage", "activeTab", "windows"],
+  "permissions": ["tabs", "scripting", "downloads", "storage", "activeTab"],
   "background": {
     "scripts": ["src/background.js"]
   },

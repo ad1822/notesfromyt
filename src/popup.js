@@ -12,7 +12,7 @@ async function saveTextareaToFile(textarea) {
 
   const blob = new Blob([content], { type: "text/markdown" });
   const url = URL.createObjectURL(blob);
-  console.log(filename)
+  // console.log(filename)
 
   await browser.downloads.download({
     url: url,
@@ -22,6 +22,11 @@ async function saveTextareaToFile(textarea) {
 
   URL.revokeObjectURL(url);
 }
+
+document.getElementById("clean").addEventListener("click", () => {
+  const textarea = document.getElementById("textarea");
+  textarea.value = ""
+})
 
 document.getElementById("save").addEventListener("click", () => {
   saveTextareaToFile(textarea);
@@ -65,11 +70,13 @@ document.getElementById("timestamp").addEventListener("click", async () => {
       action: "getTimestamp"
     });
 
-    const { url } = await browser.storage.local.get("url")
+    const { hash } = await browser.tabs.sendMessage(tab.id, {
+      action: "getVideoInfo"
+    });
+
 
     const textarea = document.getElementById("textarea");
-    textarea.value += `\n[${time}](${url}?t=${actualTime})`;
-
+    textarea.value += `\n[${time}](https://youtu.be/${hash}?t=${actualTime})`;
     await browser.storage.local.set({ notes: textarea.value });
 
   } catch (err) {

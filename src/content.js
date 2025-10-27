@@ -6,20 +6,36 @@ async function getVideoDetails() {
 
 
   const duration = document.querySelector(".ytp-time-duration")?.innerText || null;
-  console.log(duration)
 
-  const url = window.location.href
+  let url = window.location.href
+  url = url.split("&t")[0]
 
-  await browser.storage.local.set({ title, channel, url, duration });
-  return { title, channel, url, duration };
+  let hash = url.split("?v=")[1]
+
+  await browser.storage.local.set({ title, channel, url, hash, duration });
+
+  return { title, channel, url, hash, duration };
 }
 
 async function latestTimestamp() {
   const time = document.querySelector(".ytp-time-current")?.innerText || null;
+  if (!time) return { time: null, actualTime: null };
+
   await browser.storage.local.set({ timestamp: time });
-  const [minStr, secStr] = time.split(":");
-  const min = parseInt(minStr, 10) * 60
-  const actualTime = min + parseInt(secStr, 10)
+
+  const parts = time.split(":").map(Number);
+  let actualTime = 0;
+
+  if (parts.length === 3) {
+    const [hours, minutes, seconds] = parts;
+    actualTime = hours * 3600 + minutes * 60 + seconds;
+  } else if (parts.length === 2) {
+    const [minutes, seconds] = parts;
+    actualTime = minutes * 60 + seconds;
+  } else {
+    actualTime = parts[0] || 0;
+  }
+
   return { time, actualTime };
 }
 

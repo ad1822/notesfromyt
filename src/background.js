@@ -35,11 +35,15 @@ async function captureScreenshot({ rect }) {
       files: ["content.js"]
     });
 
-    const { title } = await browser.storage.local.get("title");
+    // Take value from local
+    // const { title } = await browser.storage.local.get("title");
+
+    // No, Take value from youtube page, because in local value maybe wrong
+    const { title } = await browser.tabs.sendMessage(tab.id, {
+      action: "getVideoInfo"
+    });
+
     const safeTitle = (title || "unknown_video").replace(/[\/\\:*?"<>|]/g, "").trim();
-    console.log(safeTitle)
-
-
 
     const filename = `screenshot/screenshot-${date}.png`;
     latestFilename = filename;
@@ -51,7 +55,7 @@ async function captureScreenshot({ rect }) {
     });
 
     browser.runtime.sendMessage({ action: "newFilename", filename });
-    console.log("Cropped frame saved as", filename);
+    // console.log("Cropped frame saved as", filename);
   } catch (err) {
     console.error("Capture failed:", err);
   }
@@ -64,8 +68,5 @@ browser.runtime.onMessage.addListener((msg) => {
       break;
     case "getFilename":
       return Promise.resolve({ filename: latestFilename });
-    case "videoTitle":
-      console.log("Video title received in background:", msg.title);
-      break;
   }
 });
