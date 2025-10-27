@@ -114,6 +114,129 @@ browser.runtime.onMessage.addListener(async (msg) => {
   await browser.storage.local.set({ notes: textarea.value });
 });
 
+document.getElementById("bold").addEventListener("click", async () => {
+  const textarea = document.getElementById('textarea');
+
+  const start = textarea.selectionStart;
+  const end = textarea.selectionEnd;
+
+  const currentValue = textarea.value;
+
+  const selectedText = textarea.value.substring(start, end);
+  const newValue = currentValue.slice(0, start) + `**${selectedText}**` + currentValue.slice(end)
+
+  textarea.value = newValue
+
+  await browser.storage.local.set({ notes: textarea.value });
+})
+
+
+document.getElementById("italic").addEventListener("click", async () => {
+  const textarea = document.getElementById('textarea');
+
+  const start = textarea.selectionStart;
+  const end = textarea.selectionEnd;
+
+  const currentValue = textarea.value;
+
+  const selectedText = textarea.value.substring(start, end);
+  const newValue = currentValue.slice(0, start) + `_${selectedText}_` + currentValue.slice(end)
+
+  textarea.value = newValue
+
+  await browser.storage.local.set({ notes: textarea.value });
+})
+
+
+document.getElementById("checkbox").addEventListener("click", async () => {
+  const textarea = document.getElementById('textarea');
+
+  const start = textarea.selectionStart;
+  const end = textarea.selectionEnd;
+
+  const currentValue = textarea.value;
+
+  const selectedText = textarea.value.substring(start, end);
+  const newValue = currentValue.slice(0, start) + `- [ ] ${selectedText}` + currentValue.slice(end)
+
+  textarea.value = newValue
+
+  await browser.storage.local.set({ notes: textarea.value });
+})
+
+document.getElementById("bullets").addEventListener("click", async () => {
+  const textarea = document.getElementById('textarea');
+
+  const start = textarea.selectionStart;
+  const end = textarea.selectionEnd;
+
+  const currentValue = textarea.value;
+
+  const selectedText = textarea.value.substring(start, end);
+
+  const lines = selectedText.split('\n');
+
+  const bulletedLines = lines.map(line => `- ${line}`);
+
+  const newText = bulletedLines.join('\n');
+
+  const newValue = currentValue.slice(0, start) + `${newText}` + currentValue.slice(end)
+
+  textarea.value = newValue
+
+  await browser.storage.local.set({ notes: textarea.value });
+})
+
+
+document.getElementById("h1").addEventListener("click", async () => {
+  const textarea = document.getElementById('textarea');
+
+  const start = textarea.selectionStart;
+  const end = textarea.selectionEnd;
+
+  const currentValue = textarea.value;
+
+  const selectedText = textarea.value.substring(start, end);
+  const newValue = currentValue.slice(0, start) + `# ${selectedText}` + currentValue.slice(end)
+
+  textarea.value = newValue
+
+  await browser.storage.local.set({ notes: textarea.value });
+})
+
+
+document.getElementById("h2").addEventListener("click", async () => {
+  const textarea = document.getElementById('textarea');
+
+  const start = textarea.selectionStart;
+  const end = textarea.selectionEnd;
+
+  const currentValue = textarea.value;
+
+  const selectedText = textarea.value.substring(start, end);
+  const newValue = currentValue.slice(0, start) + `## ${selectedText}` + currentValue.slice(end)
+
+  textarea.value = newValue
+
+  await browser.storage.local.set({ notes: textarea.value });
+})
+
+
+document.getElementById("h3").addEventListener("click", async () => {
+  const textarea = document.getElementById('textarea');
+
+  const start = textarea.selectionStart;
+  const end = textarea.selectionEnd;
+
+  const currentValue = textarea.value;
+
+  const selectedText = textarea.value.substring(start, end);
+  const newValue = currentValue.slice(0, start) + `### ${selectedText}` + currentValue.slice(end)
+
+  textarea.value = newValue
+
+  await browser.storage.local.set({ notes: textarea.value });
+})
 
 const textarea = document.getElementById("textarea");
 
