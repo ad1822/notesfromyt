@@ -1,5 +1,6 @@
 {
   "manifest_version": 2,
+  "auther" : "Ayush",
   "name": "Markdown notes from Youtube",
   "version": "0.1",
   "description": "Take notes, screenshots, timestamp from youtube video and save it as a Markdown file, Competible with Obsidian template.",
@@ -9,21 +10,24 @@
   },
   "content_scripts": [
     {
-      "matches": ["https://www.youtube.com/*"]
-    }
-  ],
-  "content_scripts": [
-    {
       "matches": ["*://*.youtube.com/*"],
-      "js": ["content.js"],
+      "js": ["src/content.js"],
       "run_at": "document_idle"
     }
   ],
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "note-taker@ayush.dev",
+      "data_collection_permissions": {
+        "required" : ["none"]
+      }
+    }
+  },
   "browser_action": {
     "default_popup": "src/popup.html",
     "default_icon": {
-      "16": "icons/icon.png",
-      "48": "icons/icon.png"
+      "16": "icons/icon-16.png",
+      "48": "icons/icon-48.png"
     }
   }
 }
