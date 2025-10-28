@@ -5,19 +5,29 @@ async function saveTextareaToFile(textarea) {
   let title = result.title || "unknown_video";
 
   title = title.replace(/[\/\\:*?"<>|]/g, "").trim();
-
   const filename = `notesfromyt/${title}/${title}.md`;
 
   const content = textarea.value;
-
   const blob = new Blob([content], { type: "text/markdown" });
   const url = URL.createObjectURL(blob);
-  // console.log(filename)
 
+  const existing = await browser.downloads.search({ filename });
+
+  if (existing && existing.length > 0) {
+    try {
+      await browser.downloads.removeFile(existing[0].id);
+    } catch (e) {
+      console.warn("removeFile not supported, erasing download entry instead");
+    }
+    await browser.downloads.erase({ id: existing[0].id });
+  }
+
+  // Download new version
   await browser.downloads.download({
-    url: url,
-    filename: filename,
-    saveAs: false
+    url,
+    filename,
+    saveAs: false,
+    conflictAction: "overwrite" // ensure overwrite if supported
   });
 
   URL.revokeObjectURL(url);

@@ -41,7 +41,7 @@ async function latestTimestamp() {
 
 // Auto-capture frame on video load
 async function captureCurrentVideoFrame() {
-  const video = document.querySelector(".html5-main-video");
+  const video = document.querySelector("video");
   if (!video) return;
 
   const rect = video.getBoundingClientRect();
