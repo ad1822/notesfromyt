@@ -87,9 +87,22 @@ document.getElementById("timestamp").addEventListener("click", async () => {
 
 
     const textarea = document.getElementById("textarea");
-    textarea.value += `\n[${time}](https://youtu.be/${hash}?t=${actualTime})`;
-    await browser.storage.local.set({ notes: textarea.value });
+    const textToInsert = `\n[${time}](https://youtu.be/${hash}?t=${actualTime})`;
 
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+
+    textarea.value =
+      textarea.value.substring(0, start) + // Text before the cursor
+      textToInsert +                       // The new text
+      textarea.value.substring(end);       // Text after the cursor
+
+    const newCursorPosition = start + textToInsert.length;
+    textarea.selectionStart = newCursorPosition;
+    textarea.selectionEnd = newCursorPosition;
+
+    textarea.focus();
+    await browser.storage.local.set({ notes: textarea.value });
   } catch (err) {
     console.error(err);
   }
@@ -114,12 +127,35 @@ document.getElementById("capture").addEventListener("click", async () => {
   }
 });
 
+
+document.getElementById("open-settings").addEventListener("click", () => {
+  browser.runtime.openOptionsPage();
+});
+
 browser.runtime.onMessage.addListener(async (msg) => {
-  if (msg.action === "newFilename") {
-    const textarea = document.getElementById("textarea");
-    textarea.value += `\n![](${msg.filename})`;
-  }
   const textarea = document.getElementById("textarea");
+  if (!textarea) {
+    console.error("Textarea element not found.");
+    return;
+  }
+
+  if (msg.action === "newFilename") {
+    const textToInsert = `\n![](${msg.filename})`;
+
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+
+    textarea.value =
+      textarea.value.substring(0, start) +
+      textToInsert +
+      textarea.value.substring(end);
+
+    const newCursorPosition = start + textToInsert.length;
+    textarea.selectionStart = newCursorPosition;
+    textarea.selectionEnd = newCursorPosition;
+
+    textarea.focus();
+  }
 
   await browser.storage.local.set({ notes: textarea.value });
 });
@@ -254,8 +290,49 @@ textarea.addEventListener("input", async () => {
   await browser.storage.local.set({ notes: textarea.value });
 });
 
+// popup.js - Click Handler Update
+const script = document.getElementById("transcript");
+script.addEventListener("click", async () => {
+  const textarea = document.getElementById("textarea");
+  const { hash } = await browser.storage.local.get("hash");
+
+  await browser.storage.local.remove(["lastSummary", "lastError"]);
+
+  textarea.value = (textarea.value || "") + "\n\n[Starting summary... Please wait or check back later.]";
+
+  browser.runtime.sendMessage({ type: "FETCH_TRANSCRIPT", videoId: hash });
+
+  await browser.storage.local.set({ notes: textarea.value });
+});
+
 // Load saved content when popup opens
-(async () => {
-  const { notes } = await browser.storage.local.get("notes");
-  if (notes) textarea.value = notes;
-})();
+// (async () => {
+//   const { notes } = await browser.storage.local.get("notes");
+//   if (notes) textarea.value = notes;
+// })();
+
+document.addEventListener('DOMContentLoaded', async () => {
+  const textarea = document.getElementById("textarea");
+
+  const { notes, lastSummary, lastError } = await browser.storage.local.get(["notes", "lastSummary", "lastError"]);
+
+  if (notes) {
+    textarea.value = notes;
+  }
+
+  if (lastSummary) {
+    textarea.value = textarea.value.replace(/\n\n\[Starting summary... Please wait or check back later\.\]/g, '');
+
+    textarea.value = textarea.value + "\n\n### Summary\n\n" + lastSummary;
+
+    await browser.storage.local.set({ notes: textarea.value });
+    await browser.storage.local.remove("lastSummary");
+
+  } else if (lastError) {
+    textarea.value = textarea.value.replace(/\n\n\[Starting summary... Please wait or check back later\.\]/g, '');
+    textarea.value = textarea.value + "\n\n[Error during summarization: " + lastError + "]";
+
+    await browser.storage.local.set({ notes: textarea.value });
+    await browser.storage.local.remove("lastError");
+  }
+});

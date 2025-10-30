@@ -17,6 +17,16 @@ async function getVideoDetails() {
   return { title, channel, url, hash, duration };
 }
 
+async function getVideoHash() {
+  let url = window.location.href
+  url = url.split("&t")[0]
+
+  let hash = url.split("?v=")[1]
+
+
+  return { hash };
+}
+
 async function latestTimestamp() {
   const time = document.querySelector(".ytp-time-current")?.innerText || null;
   if (!time) return { time: null, actualTime: null };
@@ -63,4 +73,5 @@ window.captureCurrentVideoFrame = captureCurrentVideoFrame;
 browser.runtime.onMessage.addListener((msg) => {
   if (msg.action === "getVideoInfo") return getVideoDetails();
   if (msg.action === "getTimestamp") return latestTimestamp();
+  if (msg.action === "getHash") return getVideoHash();
 });
