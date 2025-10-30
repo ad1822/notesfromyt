@@ -1,25 +1,185 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>YT Summarizer Settings</title>
+  <meta charset="UTF-8" />
+  <title>YouTube Summarizer — Settings</title>
   <style>
-    body { font-family: sans-serif; padding: 20px; width: 300px; }
-    label { display: block; margin-top: 10px; }
-    input { width: 100%; padding: 6px; margin-top: 4px; }
-    button { margin-top: 15px; padding: 8px; width: 100%; }
+    /* === Catppuccin Mocha Palette === */
+    :root {
+      --crust: #11111b;
+      --mantle: #181825;
+      --surface0: #313244;
+      --surface1: #45475a;
+      --text: #cdd6f4;
+      --subtext: #a6adc8;
+      --accent: #89b4fa;
+      --accent-hover: #74a0f5;
+      --radius: 12px;
+      --shadow: rgba(0, 0, 0, 0.4);
+    }
+
+    body {
+      background: var(--crust);
+      color: var(--text);
+      font-family: "Inter", system-ui, sans-serif;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 30px 20px;
+      gap: 24px;
+      min-height: 100vh;
+    }
+
+    .form-box {
+      background: var(--mantle);
+      border: 1px solid var(--surface0);
+      border-radius: var(--radius);
+      box-shadow: 0 4px 18px var(--shadow);
+      width: 360px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+
+    h2 {
+      color: var(--accent);
+      font-size: 1.4rem;
+      margin: 0 0 8px;
+    }
+
+    p.subtitle {
+      color: var(--subtext);
+      font-size: 0.9rem;
+      margin-bottom: 18px;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      width: 100%;
+    }
+
+    label {
+      text-align: left;
+      font-weight: 600;
+      color: var(--text);
+      font-size: 0.9rem;
+    }
+
+    input {
+      width: 100%;
+      padding: 8px;
+      border-radius: 6px;
+      border: 1px solid var(--surface1);
+      background: var(--surface0);
+      color: var(--text);
+      font-size: 0.9rem;
+      outline: none;
+      transition: border 0.2s ease;
+    }
+
+    input:focus {
+      border-color: var(--accent);
+    }
+
+    button {
+      margin-top: 8px;
+      padding: 10px;
+      width: 100%;
+      border: none;
+      border-radius: 6px;
+      background: var(--accent);
+      color: var(--crust);
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 0.95rem;
+      transition: background 0.2s ease;
+    }
+
+    button:hover {
+      background: var(--accent-hover);
+    }
+
+    /* === Documentation Section === */
+    .docs {
+      width: 360px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .docs section {
+      background: var(--mantle);
+      border: 1px solid var(--surface0);
+      border-radius: var(--radius);
+      padding: 16px;
+      box-shadow: 0 2px 8px var(--shadow);
+    }
+
+    .docs h3 {
+      color: var(--accent);
+      margin: 0 0 6px;
+      font-size: 1.1rem;
+    }
+
+    .docs p {
+      margin: 0;
+      color: var(--subtext);
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+
+    code {
+      background: var(--surface0);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: monospace;
+      color: var(--accent);
+    }
   </style>
 </head>
 <body>
-  <h2>Settings</h2>
+  <div class="form-box">
+    <h2>YouTube Summarizer</h2>
+    <p class="subtitle">Configure API keys to enable summarization and transcript fetching.</p>
 
-  <label>Gemini API Key</label>
-  <input id="geminiKey" type="text" placeholder="Enter Gemini key">
+    <form id="settingsForm">
+      <label for="geminiKey">Gemini API Key</label>
+      <input id="geminiKey" type="text" placeholder="Enter Gemini API key" />
 
-  <label>YouTube API Key</label>
-  <input id="youtubeKey" type="text" placeholder="Enter YouTube key">
+      <label for="youtubeKey">YouTube Transcript API Key</label>
+      <input id="youtubeKey" type="text" placeholder="Enter YouTube Transcript API key" />
 
-  <button id="save">Save Settings</button>
+      <button id="saveBtn">Save Settings</button>
+    </form>
+  </div>
+
+  <div class="docs">
+    <section>
+      <h3>Where to Get API Keys</h3>
+      <p><strong>Gemini API:</strong> Get it from <code>https://aistudio.google.com/api-keys</code><br>
+      <strong>YouTube Transcript API:</strong> Visit <code>https://www.youtube-transcript.io</code> and generate your key.</p>
+    </section>
+
+    <section>
+      <h3>How This Extension Works</h3>
+      <p>1. Opens a YouTube video.<br>
+         2. Fetches the transcript automatically.<br>
+         3. Summarizes the transcript using Gemini.<br>
+         4. Saves both transcript and summary locally for offline access.</p>
+    </section>
+
+    <section>
+      <h3>Storage Locations</h3>
+      <p>Notes → <code>~/Downloads/notesfromyt/Video Title/Video Title.md</code><br>
+         Screenshots → <code>~/Downloads/notesfromyt/Video Title/screenshot/screenshot-date-time.png</code></p>
+    </section>
+  </div>
 
   <script src="settings.js"></script>
 </body>
