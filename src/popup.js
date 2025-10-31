@@ -4,7 +4,7 @@ async function saveTextareaToFile(textarea) {
   const result = await browser.storage.local.get("title");
   let title = result.title || "unknown_video";
 
-  title = title.replace(/[\/\\:*?"<>|]/g, "").trim();
+  title = title.replace(/[\/\\:.'*?"<>|]/g, "").trim();
   const filename = `notesfromyt/${title}/${title}.md`;
 
   const content = textarea.value;

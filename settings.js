@@ -13,5 +13,5 @@ async function saveSettings() {
   alert("Settings saved successfully.");
 }
 
-document.getElementById("save").addEventListener("click", saveSettings);
+document.getElementById("saveBtn").addEventListener("click", saveSettings);
 loadSettings();

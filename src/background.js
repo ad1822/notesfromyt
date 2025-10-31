@@ -43,7 +43,9 @@ async function captureScreenshot({ rect }) {
       action: "getVideoInfo"
     });
 
-    const safeTitle = (title || "unknown_video").replace(/[\/\\:*?"<>|]/g, "").trim();
+
+    const safeTitle = (title || "unknown_video").replace(/[\/\\:.'*?"<>|]/g, "").trim();
+    console.log(safeTitle)
 
     const filename = `screenshot/screenshot-${date}.png`;
     latestFilename = filename;
