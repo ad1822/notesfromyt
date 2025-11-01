@@ -1,15 +1,17 @@
 
 async function loadSettings() {
-  const settings = await browser.storage.local.get(["geminiKey", "youtubeKey"]);
+  const settings = await browser.storage.local.get(["dir", "geminiKey", "youtubeKey"]);
   document.getElementById("geminiKey").value = settings.geminiKey || "";
+  document.getElementById("dir").value = settings.dir || "";
   document.getElementById("youtubeKey").value = settings.youtubeKey || "";
 }
 
 async function saveSettings() {
   const geminiKey = document.getElementById("geminiKey").value.trim();
+  const dir = document.getElementById("dir").value.trim();
   const youtubeKey = document.getElementById("youtubeKey").value.trim();
 
-  await browser.storage.local.set({ geminiKey, youtubeKey });
+  await browser.storage.local.set({ dir, geminiKey, youtubeKey });
   alert("Settings saved successfully.");
 }
 

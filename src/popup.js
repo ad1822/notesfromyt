@@ -1,37 +1,27 @@
 async function saveTextareaToFile(textarea) {
   if (!textarea) return;
 
-  const result = await browser.storage.local.get("title");
+  const result = await browser.storage.local.get(["title", "dir"]);
   let title = result.title || "unknown_video";
+  const dir = result.dir || "";
 
   title = title.replace(/[\/\\:.'*?"<>|]/g, "").trim();
-  const filename = `notesfromyt/${title}/${title}.md`;
 
+  const [vault, ...pathParts] = dir.split("/");
+  const folderPath = pathParts.join("/");
+  const filename = `${folderPath}/${title}.md`;
   const content = textarea.value;
-  const blob = new Blob([content], { type: "text/markdown" });
-  const url = URL.createObjectURL(blob);
 
-  const existing = await browser.downloads.search({ filename });
+  const encodedVault = encodeURIComponent(vault);
+  const encodedPath = encodeURIComponent(filename);
+  const encodedContent = encodeURIComponent(content);
 
-  if (existing && existing.length > 0) {
-    try {
-      await browser.downloads.removeFile(existing[0].id);
-    } catch (e) {
-      console.warn("removeFile not supported, erasing download entry instead");
-    }
-    await browser.downloads.erase({ id: existing[0].id });
-  }
+  // Using the same file path overwrites if it exists
+  const obsidianUrl = `obsidian://new?vault=${encodedVault}&file=${encodedPath}&content=${encodedContent}`;
 
-  // Download new version
-  await browser.downloads.download({
-    url,
-    filename,
-    saveAs: false,
-    conflictAction: "overwrite" // ensure overwrite if supported
-  });
-
-  URL.revokeObjectURL(url);
+  const tab = await browser.tabs.create({ url: obsidianUrl });
 }
+
 
 document.getElementById("clean").addEventListener("click", async () => {
   const textarea = document.getElementById("textarea");

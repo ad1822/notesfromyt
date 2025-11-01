@@ -6,7 +6,10 @@ async function captureScreenshot({ rect }) {
     const dataUrl = await browser.tabs.captureVisibleTab(tab.windowId, { format: "png" });
 
     const img = await createImageBitmap(await (await fetch(dataUrl)).blob());
-    const canvas = new OffscreenCanvas(rect.width * rect.devicePixelRatio, rect.height * rect.devicePixelRatio);
+    const canvas = new OffscreenCanvas(
+      rect.width * rect.devicePixelRatio,
+      rect.height * rect.devicePixelRatio
+    );
     const ctx = canvas.getContext("2d");
 
     ctx.drawImage(
@@ -21,43 +24,21 @@ async function captureScreenshot({ rect }) {
       rect.height * rect.devicePixelRatio
     );
 
+    // Convert to blob
     const croppedBlob = await canvas.convertToBlob({ type: "image/png" });
-    const croppedUrl = URL.createObjectURL(croppedBlob);
 
-    const now = new Date();
+    // Copy image blob to clipboard
+    await navigator.clipboard.write([
+      new ClipboardItem({
+        "image/png": croppedBlob
+      })
+    ]);
 
-    const date = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}-${String(now.getHours()).padStart(2, '0')}-${String(now.getMinutes()).padStart(2, '0')}-${String(now.getSeconds()).padStart(2, '0')}`;
-    const folder = "notesfromyt";
+    console.log("Screenshot copied to clipboard.");
 
+    // Optional: Notify popup or background
+    browser.runtime.sendMessage({ action: "copiedToClipboard" });
 
-    await browser.scripting.executeScript({
-      target: { tabId: tab.id },
-      files: ["content.js"]
-    });
-
-    // Take value from local
-    // const { title } = await browser.storage.local.get("title");
-
-    // No, Take value from youtube page, because in local value maybe wrong
-    const { title } = await browser.tabs.sendMessage(tab.id, {
-      action: "getVideoInfo"
-    });
-
-
-    const safeTitle = (title || "unknown_video").replace(/[\/\\:.'*?"<>|]/g, "").trim();
-    console.log(safeTitle)
-
-    const filename = `screenshot/screenshot-${date}.png`;
-    latestFilename = filename;
-
-    await browser.downloads.download({
-      url: croppedUrl,
-      filename: `${folder}/${safeTitle}/${filename}`,
-      saveAs: false
-    });
-
-    browser.runtime.sendMessage({ action: "newFilename", filename });
-    // console.log("Cropped frame saved as", filename);
   } catch (err) {
     console.error("Capture failed:", err);
   }

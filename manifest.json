@@ -4,7 +4,7 @@
   "name": "Markdown notes from Youtube",
   "version": "1.2.0",
   "description": "Take notes, screenshots, timestamp from youtube video and save it as a Markdown file, Competible with Obsidian template.",
-  "permissions": ["tabs", "scripting", "downloads", "storage", "activeTab", "https://www.youtube-transcript.io/*"],
+  "permissions": ["tabs", "scripting", "downloads","clipboardWrite", "storage", "activeTab", "https://www.youtube-transcript.io/*"],
   "background": {
     "scripts": ["src/background.js"]
   },
