@@ -30,10 +30,10 @@ async function captureScreenshot({ rect }) {
     const folder = "notesfromyt";
 
 
-    await browser.scripting.executeScript({
-      target: { tabId: tab.id },
-      files: ["content.js"]
-    });
+    // await browser.scripting.executeScript({
+    //   target: { tabId: tab.id },
+    //   files: ["src/content.js"]
+    // });
 
     // Take value from local
     // const { title } = await browser.storage.local.get("title");
@@ -45,7 +45,6 @@ async function captureScreenshot({ rect }) {
 
 
     const safeTitle = (title || "unknown_video").replace(/[\/\\:.'*?"<>|]/g, "").trim();
-    console.log(safeTitle)
 
     const filename = `screenshot/screenshot-${date}.png`;
     latestFilename = filename;
@@ -57,7 +56,6 @@ async function captureScreenshot({ rect }) {
     });
 
     browser.runtime.sendMessage({ action: "newFilename", filename });
-    // console.log("Cropped frame saved as", filename);
   } catch (err) {
     console.error("Capture failed:", err);
   }
