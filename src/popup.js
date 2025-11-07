@@ -17,9 +17,9 @@ async function saveTextareaToFile(textarea) {
   const encodedContent = encodeURIComponent(content);
 
   // Using the same file path overwrites if it exists
-  const obsidianUrl = `obsidian://new?vault=${encodedVault}&file=${encodedPath}&content=${encodedContent}`;
+  const obsidianUrl = `obsidian://new?vault=${encodedVault}&file=${encodedPath}&content=${encodedContent}&overwrite`;
 
-  const tab = await browser.tabs.create({ url: obsidianUrl });
+  await browser.tabs.create({ url: obsidianUrl });
 }
 
 
